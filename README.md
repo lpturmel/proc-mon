@@ -20,7 +20,7 @@ Description: The culmination of our project, app is a desktop application for pr
 
 # Getting Started
 
-1. Clone the Repository:
+1. **Clone the Repository:**
 
 ```
 git clone https://github.com/lpturmel/proc-mon.git
@@ -29,7 +29,7 @@ git clone https://github.com/lpturmel/proc-mon.git
 2. **Build and Run:**
 
 ```
-cd app
+cd proc-mon/app
 ```
 
 ## For running locally
@@ -44,4 +44,4 @@ cargo tauri dev
 cargo tauri build
 ```
 
-Note: that this assumes you have a Mac running with libproc discoverable
+Note: that this assumes you have a Mac running with `libproc` discoverable
