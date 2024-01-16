@@ -2,7 +2,8 @@
 
 members = [ 
     "proc-mon-sys",
-    "proc-mon",
-    "proc-mon/src-tauri", 
-    "shared-types"
+    "app",
+    "app/src-tauri", 
+    "shared-types", 
+    "proc-mon"
 ]

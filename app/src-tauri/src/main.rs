@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-use proc_mon_sys::{list_all_pids, ProcessType};
+use proc_mon::{list_all_pids, ProcessType};
 use shared_types::ProcessPayload;
 
 #[tauri::command]

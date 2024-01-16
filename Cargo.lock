@@ -2861,10 +2861,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "proc-mon"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "proc-mon-sys",
+]
+
+[[package]]
 name = "proc-mon-app"
 version = "0.0.0"
 dependencies = [
- "proc-mon-sys",
+ "proc-mon",
  "serde",
  "serde_json",
  "shared-types",
