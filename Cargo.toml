@@ -1,0 +1,8 @@
+[workspace]
+
+members = [ 
+    "proc-mon-sys",
+    "proc-mon",
+    "proc-mon/src-tauri", 
+    "shared-types"
+]
