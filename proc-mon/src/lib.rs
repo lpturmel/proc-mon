@@ -119,7 +119,6 @@ impl Process {
     pub fn kill(&self) -> Result<(), ProcPidRusageError> {
         let mut sig = ffi::SIGKILL as i32;
         let result = unsafe { ffi::proc_terminate(self.pid, &mut sig as *mut i32) };
-        println!("Result from kill command: {}", result);
         if result == -1 {
             let errno = unsafe { *libc::__error() };
             let error = ProcPidRusageError::from_errno(errno);
