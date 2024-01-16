@@ -36,7 +36,9 @@ fn format_bytes_as_hr(bytes: u64) -> String {
     }
 }
 #[derive(Serialize)]
+#[non_exhaustive]
 struct GetProcCmdArgs;
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     let (procs, set_procs) = create_signal::<Vec<ProcessPayload>>(cx, vec![]);

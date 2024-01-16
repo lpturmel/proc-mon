@@ -8,18 +8,7 @@ fn get_processes() -> Vec<ProcessPayload> {
     let procs = list_all_pids(ProcessType::All);
     let mut procs = procs
         .into_iter()
-        .flat_map(|p| {
-            let info = p.usage();
-            if let Ok(info) = info {
-                Some(ProcessPayload {
-                    name: p.name(),
-                    pid: p.pid(),
-                    mem_usage: info.ri_phys_footprint,
-                })
-            } else {
-                None
-            }
-        })
+        .flat_map(|p| p.try_into())
         .collect::<Vec<ProcessPayload>>();
     procs.sort_by(|a, b| b.mem_usage.cmp(&a.mem_usage));
     procs.into_iter().take(10).collect::<Vec<_>>()
