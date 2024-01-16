@@ -106,8 +106,8 @@ impl Process {
     /// This differs from the kill command in that it allows the process to
     /// gracefully terminate itself.
     pub fn terminate(&self) -> Result<(), ProcPidRusageError> {
-        let sig = ffi::SIGTERM;
-        let result = unsafe { ffi::proc_terminate(self.pid, sig as *mut i32) };
+        let mut sig = ffi::SIGTERM as i32;
+        let result = unsafe { ffi::proc_terminate(self.pid, &mut sig as *mut i32) };
         if result == -1 {
             let errno = unsafe { *libc::__error() };
             let error = ProcPidRusageError::from_errno(errno);
