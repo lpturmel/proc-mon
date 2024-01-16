@@ -2,4 +2,5 @@ target
 .DS_Store
 node_modules
 .vscode
-style/tailwind.css
+style
+tailwind.css
