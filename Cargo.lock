@@ -2889,6 +2889,7 @@ dependencies = [
  "leptos",
  "serde",
  "serde-wasm-bindgen 0.5.0",
+ "serde_json",
  "shared-types",
  "tauri-sys",
  "wasm-bindgen",

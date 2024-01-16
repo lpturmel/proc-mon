@@ -1,22 +1,23 @@
-use futures::StreamExt;
-use leptos::leptos_dom::console_log;
+// use futures::StreamExt;
 use leptos::*;
+use serde::Serialize;
 use shared_types::ProcessPayload;
-use tauri_sys::event;
-// use wasm_bindgen::prelude::*;
-//
-// #[wasm_bindgen]
-// extern "C" {
-//     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-//     async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-//     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-//     async fn listen(event: &str) -> JsValue;
+// use tauri_sys::event;
+use tauri_sys::tauri::invoke;
+
+// async fn list_on_proc_info(event_writer: WriteSignal<Vec<ProcessPayload>>) {
+//     let mut events = event::listen::<Vec<ProcessPayload>>("procs").await.unwrap();
+//     while let Some(ev) = events.next().await {
+//         event_writer.set(ev.payload);
+//     }
 // }
-async fn list_on_proc_info(event_writer: WriteSignal<Vec<ProcessPayload>>) {
-    let mut events = event::listen::<Vec<ProcessPayload>>("procs").await.unwrap();
-    while let Some(ev) = events.next().await {
-        console_log(&format!("Got event: {:?}", ev));
-        event_writer.set(ev.payload);
+async fn poll_procs(event_writer: WriteSignal<Vec<ProcessPayload>>) {
+    loop {
+        let procs = invoke::<_, Vec<ProcessPayload>>("get_processes", &())
+            .await
+            .unwrap();
+        event_writer.set(procs);
+        std::thread::sleep(std::time::Duration::from_secs(1));
     }
 }
 fn format_bytes_as_hr(bytes: u64) -> String {
@@ -34,11 +35,13 @@ fn format_bytes_as_hr(bytes: u64) -> String {
         format!("{} bytes", bytes)
     }
 }
+#[derive(Serialize)]
+struct GetProcCmdArgs;
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     let (procs, set_procs) = create_signal::<Vec<ProcessPayload>>(cx, vec![]);
 
-    create_local_resource(cx, move || set_procs, list_on_proc_info);
+    create_local_resource(cx, move || set_procs, poll_procs);
 
     view! { cx,
         <main class="container">
