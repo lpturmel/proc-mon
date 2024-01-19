@@ -130,10 +130,14 @@ impl Process {
 /// Lists all the active processes on the system
 pub fn list_all_pids(proc_type: ProcessType) -> Vec<Process> {
     let typeinfo: u32 = 0;
+    // SAFETY: This is safe because we are passing in a null pointer and 0 for the buffer size
+    // libproc will return the number of bytes needed to store the pids in the buffer
     let buffer_size: i32 =
         unsafe { ffi::proc_listpids(proc_type as u32, typeinfo, std::ptr::null_mut(), 0) };
     let mut buffer: Vec<i32> =
         Vec::with_capacity((buffer_size as usize) / std::mem::size_of::<i32>());
+    // SAFETY: This is safe because we are guaranteeing that the buffer is large enough to hold
+    // the pids & we are passing a raw pointer to our owned buffer
     let _bytes_filled = unsafe {
         ffi::proc_listpids(
             proc_type as u32,

@@ -1,9 +1,13 @@
+use std::time::Duration;
+
 // use futures::StreamExt;
+use leptos::leptos_dom::console_log;
 use leptos::*;
 use serde::Serialize;
 use shared_types::ProcessPayload;
 // use tauri_sys::event;
 use tauri_sys::tauri::invoke;
+// use wasm_bindgen_futures::spawn_local;
 
 // async fn list_on_proc_info(event_writer: WriteSignal<Vec<ProcessPayload>>) {
 //     let mut events = event::listen::<Vec<ProcessPayload>>("procs").await.unwrap();
@@ -11,14 +15,14 @@ use tauri_sys::tauri::invoke;
 //         event_writer.set(ev.payload);
 //     }
 // }
-async fn poll_procs(event_writer: WriteSignal<Vec<ProcessPayload>>) {
-    loop {
-        let procs = invoke::<_, Vec<ProcessPayload>>("get_processes", &())
-            .await
-            .unwrap();
-        event_writer.set(procs);
-        std::thread::sleep(std::time::Duration::from_secs(1));
-    }
+async fn get_procs(event_writer: WriteSignal<Vec<ProcessPayload>>) {
+    let procs = invoke::<_, Vec<ProcessPayload>>("get_processes", &())
+        .await
+        .unwrap();
+    // for proc in &procs {
+    //     console_log(format!("{}: {}", proc.pid, proc.name).as_str());
+    // }
+    event_writer.set(procs);
 }
 fn format_bytes_as_hr(bytes: u64) -> String {
     let bytes_per_kb: f64 = 1024.0;
@@ -43,10 +47,19 @@ struct GetProcCmdArgs;
 pub fn App(cx: Scope) -> impl IntoView {
     let (procs, set_procs) = create_signal::<Vec<ProcessPayload>>(cx, vec![]);
 
-    create_local_resource(cx, move || set_procs, poll_procs);
+    set_interval_with_handle(
+        move || spawn_local(get_procs(set_procs)),
+        Duration::from_secs(1),
+    )
+    .expect("Failed to set interval");
 
+    create_effect(cx, move |_| {
+        let procs = procs.get();
+        let json_str = serde_json::to_string_pretty(&procs).unwrap();
+        console_log(json_str.as_str());
+    });
     view! { cx,
-        <main class="container">
+        <main class="container w-full h-full">
             <div class="overflow-x-auto">
           <table class="table table-lg">
             <thead>
@@ -59,7 +72,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             <tbody>
                 <For
                     each=move || procs.get()
-                    key=|p| p.pid
+                    key=|p| p.id.clone()
                     view=move |cx, e: ProcessPayload| {
                     view! { cx, <tr>
                         <td>{ e.pid }</td>
