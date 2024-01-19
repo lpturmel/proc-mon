@@ -1,27 +1,14 @@
-use std::time::Duration;
-
-// use futures::StreamExt;
 use leptos::leptos_dom::console_log;
 use leptos::*;
 use serde::Serialize;
 use shared_types::ProcessPayload;
-// use tauri_sys::event;
+use std::time::Duration;
 use tauri_sys::tauri::invoke;
-// use wasm_bindgen_futures::spawn_local;
 
-// async fn list_on_proc_info(event_writer: WriteSignal<Vec<ProcessPayload>>) {
-//     let mut events = event::listen::<Vec<ProcessPayload>>("procs").await.unwrap();
-//     while let Some(ev) = events.next().await {
-//         event_writer.set(ev.payload);
-//     }
-// }
 async fn get_procs(event_writer: WriteSignal<Vec<ProcessPayload>>) {
     let procs = invoke::<_, Vec<ProcessPayload>>("get_processes", &())
         .await
         .unwrap();
-    // for proc in &procs {
-    //     console_log(format!("{}: {}", proc.pid, proc.name).as_str());
-    // }
     event_writer.set(procs);
 }
 fn format_bytes_as_hr(bytes: u64) -> String {
